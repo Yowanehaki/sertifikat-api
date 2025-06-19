@@ -28,23 +28,39 @@ class SharpUtils {
         day: 'numeric'
       });
 
-      // Simplify the SVG generation first to test
+      // Fixed positioning based on original certificate layout
       const textSvg = `
-        <svg width="3508" height="2480">
-          <style>
-            text { font-family: Arial, sans-serif; }
-          </style>
-          <text x="1754" y="1000" font-size="100" text-anchor="middle" fill="black">
-            ${this.escapeXml(data.participantName)}
-          </text>
-          <text x="1754" y="1200" font-size="70" text-anchor="middle" fill="black">
-            ${this.escapeXml(data.activity)}
-          </text>
-          <text x="1754" y="1400" font-size="50" text-anchor="middle" fill="black">
-            ${formattedDate}
-          </text>
-        </svg>
-      `;
+  <svg width="3508" height="2480" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+        text { font-family: Montserrat, sans-serif; }
+      </style>
+    </defs>
+    <text x="1754" y="1060" font-size="120" font-weight="bold" text-anchor="middle" fill="black">
+      ${this.escapeXml(data.participantName)}
+    </text>
+    <text x="1754" y="1445" font-size="80" font-weight="bold" text-anchor="middle" fill="black">
+      ${this.escapeXml(data.activity)}
+    </text>
+    <text x="1754" y="1510" font-size="50" font-weight="semibold" text-anchor="middle" fill="black">
+      ${formattedDate}
+    </text>
+    <text x="1754" y="2020" font-size="100" font-weight="bold" text-anchor="middle" fill="black">
+      ${this.escapeXml(data.examinerName)}
+    </text>
+    <text x="1754" y="1860" font-size="40" font-weight="bold" text-anchor="middle" fill="black">
+      ${this.escapeXml(data.signaturePath ? 'Signature' : 'No Signature')}
+    </text>
+    <text x="1754" y="2100" font-size="90"  text-decoration="underline" text-anchor="middle" fill="black">
+      ${this.escapeXml(data.examinerPosition)}
+    </text>
+    <text x="100" y="2200" font-size="45" font-weight="bold" text-anchor="star" fill="black">
+      ${this.escapeXml(data.companyCode)}
+    </text>
+    <text x="100" y="2255" font-size="45" text-anchor="star" fill="black">
+      This certificate can be validated (ID : ${this.escapeXml(data.id)})
+    </text>
+  </svg>`;
 
       // Generate the image with error handling
       try {
