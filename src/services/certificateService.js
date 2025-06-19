@@ -6,44 +6,50 @@ const prisma = new PrismaClient();
 class CertificateService {
   async createCertificate(data) {
     try {
-      // 1. Generate certificate image using Sharp
+      console.log('Creating certificate with data:', data);
+
+      // Generate image first
       const imageResult = await sharpUtils.generateCertificateImage(data);
-      
       if (!imageResult.success) {
         return {
           success: false,
-          error: imageResult.error
+          error: imageResult.error || 'Failed to generate certificate image'
         };
       }
-      
-      // 2. Save certificate data to database
+
+      // Create certificate record
       const certificate = await prisma.certificate.create({
         data: {
+          serialNumber: data.id, // Changed from certificateId to serialNumber
           participantName: data.participantName,
           activity: data.activity,
           dateIssued: new Date(data.dateIssued),
           examinerName: data.examinerName,
           examinerPosition: data.examinerPosition,
           companyCode: data.companyCode,
-          signaturePath: imageResult.filename // Store the generated image filename
+          signaturePath: imageResult.filename
         }
+      }).catch(error => {
+        if (error.code === 'P2002') {
+          throw new Error(`Certificate with ID ${data.id} already exists`);
+        }
+        throw error;
       });
-      
+
       return {
         success: true,
         data: {
-          id: certificate.id,
+          id: certificate.serialNumber,
           filename: imageResult.filename,
-          downloadUrl: `/api/certificates/download/${imageResult.filename}`,
-          viewUrl: `/certificates/${imageResult.filename}`,
-          certificate: certificate
+          previewUrl: `/certificates/${imageResult.filename}`,
+          certificate
         }
       };
     } catch (error) {
-      console.error('Error in createCertificate service:', error);
+      console.error('Certificate creation error:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message || 'Failed to create certificate'
       };
     }
   }

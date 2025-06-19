@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Certificate {
-  id               String   @id @default(cuid()) // kamu juga bisa pakai uuid() jika prefer UUID
+  id               String   @id @default(cuid())
+  serialNumber     String   @unique  // Changed from certificateId to match database
   participantName  String
   activity         String
   dateIssued       DateTime
-  signaturePath    String?     // opsional (null jika tidak ada)
+  signaturePath    String?
   examinerName     String
   examinerPosition String
   companyCode      String

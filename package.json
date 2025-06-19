@@ -2,9 +2,13 @@
   "name": "sertifikat-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "setup": "npm install && npm run prisma:generate && npm run prisma:migrate"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +21,7 @@
     "express": "^5.1.0",
     "joi": "^17.13.3",
     "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.1",
     "prisma": "^6.10.1",
     "sharp": "^0.34.2"
   }
