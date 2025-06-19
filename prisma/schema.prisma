@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Certificate {
+  id               String   @id @default(cuid()) // kamu juga bisa pakai uuid() jika prefer UUID
+  participantName  String
+  activity         String
+  dateIssued       DateTime
+  signaturePath    String?     // opsional (null jika tidak ada)
+  examinerName     String
+  examinerPosition String
+  companyCode      String
+  createdAt        DateTime @default(now())
+}
