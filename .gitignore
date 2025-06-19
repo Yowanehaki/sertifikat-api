@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+node_modules/
+generated-certificates/*
+!generated-certificates/.gitkeep
+uploads/*
+!uploads/.gitkeep
+prisma/migrations/
+.DS_Store
