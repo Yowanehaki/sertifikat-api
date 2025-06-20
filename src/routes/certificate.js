@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const certificateController = require('../controllers/certificateController');
 const { validateCertificate } = require('../middleware/validation');
+const upload = require('../middleware/upload');
 
 // Generate new certificate
-router.post('/', validateCertificate, certificateController.generateCertificate);
+router.post('/', upload.single('signaturePath'), validateCertificate, certificateController.generateCertificate);
 
 // Get all certificates
 router.get('/', certificateController.getAllCertificates);

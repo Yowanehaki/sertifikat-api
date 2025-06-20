@@ -6,6 +6,10 @@ class CertificateController {
   async generateCertificate(req, res) {
     try {
       const certificateData = req.validatedData || req.body;
+      // Inject signaturePath from uploaded file if exists
+      if (req.file) {
+        certificateData.signaturePath = req.file.path;
+      }
       console.log('Generating certificate with data:', certificateData);
 
       const result = await certificateService.createCertificate(certificateData);

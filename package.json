@@ -15,11 +15,13 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@fontsource/montserrat": "^5.2.6",
     "@prisma/client": "^6.10.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "joi": "^17.13.3",
+    "multer": "^2.0.1",
     "nodemon": "^3.1.10",
     "pdfkit": "^0.17.1",
     "prisma": "^6.10.1",
