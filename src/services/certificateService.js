@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-const sharpUtils = require('../utils/sharp');
+const sharpUtils = require('../utils/puppeteer');
 
 const prisma = new PrismaClient();
 
