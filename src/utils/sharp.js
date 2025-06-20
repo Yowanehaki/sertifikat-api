@@ -93,13 +93,13 @@ class SharpUtils {
         .montserrat-light-italic { font-family: 'Montserrat', Arial, sans-serif; font-weight: 300; font-style: italic; }
       </style>
     </defs>
-    <text x="1754" y="1060" font-size="140" class="montserrat-bold" text-anchor="middle" fill="black">
+    <text x="1754" y="1060" font-size="150" class="montserrat-bold" text-anchor="middle" fill="black">
       ${this.escapeXml(data.participantName)}
     </text>
     <text x="1754" y="1445" font-size="80" class="montserrat-semibold" text-anchor="middle" fill="black">
       ${this.escapeXml(data.activity)}
     </text>
-    <text x="1754" y="1510" font-size="50" class="montserrat-regular" text-anchor="middle" fill="black">
+    <text x="1754" y="1515" font-size="50" class="montserrat-regular" text-anchor="middle" fill="black">
       ${formattedDate}
     </text>
     <text x="1754" y="2030" font-size="100" class="montserrat-semibold" text-anchor="middle" fill="black">
@@ -136,7 +136,7 @@ class SharpUtils {
 
           compositeArray.push({
             input: signatureBuffer,
-            top: 1600, // Adjust position as needed
+            top: 1610, // Adjust position as needed
             left: 1550, // Center position (3508/2 - 200)
             gravity: 'center'
           });
