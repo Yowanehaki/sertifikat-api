@@ -85,12 +85,12 @@ class SharpUtils {
     <defs>
       <style>
         ${fontFaceCSS}
-        .montserrat-regular { font-family: 'Montserrat', Arial, sans-serif; font-weight: normal; }
-        .montserrat-bold { font-family: 'Montserrat', Arial, sans-serif; font-weight: bold; }
-        .montserrat-semibold { font-family: 'Montserrat', Arial, sans-serif; font-weight: 600; }
-        .montserrat-italic { font-family: 'Montserrat', Arial, sans-serif; font-style: italic; }
-        .montserrat-light { font-family: 'Montserrat', Arial, sans-serif; font-weight: 300; }
-        .montserrat-light-italic { font-family: 'Montserrat', Arial, sans-serif; font-weight: 300; font-style: italic; }
+        .montserrat-regular { font-family: 'Montserrat', sans-serif; font-weight: normal; }
+        .montserrat-bold { font-family: 'Montserrat', sans-serif; font-weight: bold; }
+        .montserrat-semibold { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .montserrat-italic { font-family: 'Montserrat', sans-serif; font-style: italic; }
+        .montserrat-light { font-family: 'Montserrat', sans-serif; font-weight: 300; }
+        .montserrat-light-italic { font-family: 'Montserrat', ans-serif; font-weight: 300; font-style: italic; }
       </style>
     </defs>
     <text x="1754" y="1060" font-size="150" class="montserrat-bold" text-anchor="middle" fill="black">
