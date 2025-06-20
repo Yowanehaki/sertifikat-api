@@ -93,7 +93,7 @@ class SharpUtils {
         .montserrat-light-italic { font-family: 'Montserrat', Arial, sans-serif; font-weight: 300; font-style: italic; }
       </style>
     </defs>
-    <text x="1754" y="1060" font-size="130" class="montserrat-bold" text-anchor="middle" fill="black">
+    <text x="1754" y="1060" font-size="140" class="montserrat-bold" text-anchor="middle" fill="black">
       ${this.escapeXml(data.participantName)}
     </text>
     <text x="1754" y="1445" font-size="80" class="montserrat-semibold" text-anchor="middle" fill="black">
@@ -102,16 +102,16 @@ class SharpUtils {
     <text x="1754" y="1510" font-size="50" class="montserrat-regular" text-anchor="middle" fill="black">
       ${formattedDate}
     </text>
-    <text x="1754" y="2020" font-size="95" class="montserrat-semibold" text-anchor="middle" fill="black">
+    <text x="1754" y="2030" font-size="100" class="montserrat-semibold" text-anchor="middle" fill="black">
       ${this.escapeXml(data.examinerName)}
     </text>
-    <text x="1754" y="2100" font-size="60" class="montserrat-regular" text-decoration="underline" text-anchor="middle" fill="black">
+    <text x="1754" y="2125" font-size="80" class="montserrat-regular" text-decoration="underline" text-anchor="middle" fill="black">
       ${this.escapeXml(data.examinerPosition)}
     </text>
-    <text x="100" y="2200" font-size="45" class="montserrat-bold" text-anchor="start" fill="black">
+    <text x="100" y="2190" font-size="45" class="montserrat-bold" text-anchor="start" fill="black">
       ${this.escapeXml(data.companyCode)}
     </text>
-    <text x="100" y="2255" font-size="45" class="montserrat-regular" text-anchor="start" fill="black">
+    <text x="100" y="2245" font-size="45" class="montserrat-regular" text-anchor="start" fill="black">
       This certificate can be validated (ID : ${this.escapeXml(data.id)})
     </text>
   </svg>`;
@@ -128,7 +128,7 @@ class SharpUtils {
         if (data.signaturePath && fs.existsSync(data.signaturePath)) {
           // Process signature image
           const signatureBuffer = await sharp(data.signaturePath)
-            .resize(400, 200, { // Adjust size as needed
+            .resize(600, 300, { // Adjust size as needed
               fit: 'inside',
               withoutEnlargement: true
             })
@@ -136,8 +136,8 @@ class SharpUtils {
 
           compositeArray.push({
             input: signatureBuffer,
-            top: 1700, // Adjust position as needed
-            left: 1554, // Center position (3508/2 - 200)
+            top: 1600, // Adjust position as needed
+            left: 1550, // Center position (3508/2 - 200)
             gravity: 'center'
           });
         }
