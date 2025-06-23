@@ -84,27 +84,61 @@ class CertificateController {
     try {
       const { filename } = req.params;
       const format = req.query.format || 'pdf';
-      
-      let targetFilename = filename;
-      if (format === 'pdf') {
-        targetFilename = filename.replace(/\.[^/.]+$/, '.pdf');
-      }
+      const pathBase = path.join(__dirname, '../../generated-certificates');
+      // Extract certificate id from filename (assume last part before extension)
+      const certificateId = filename.split('_').pop().replace(/\.[^/.]+$/, '');
 
-      const filePath = path.join(__dirname, '../../generated-certificates', targetFilename);
-      
+      if (format === 'pdf') {
+        // Fetch certificate data from DB
+        const certificate = await certificateService.getCertificateById(certificateId);
+        if (!certificate) {
+          return res.status(404).json({
+            success: false,
+            message: 'Certificate not found'
+          });
+        }
+        // Prepare data for PDF generation
+        const data = {
+          ...certificate,
+          id: certificate.serialNumber, // pastikan id = serialNumber (ID input user)
+          signaturePath: certificate.signaturePath // gunakan path asli, jangan di-join
+        };
+        // Generate PDF to a temp file
+        const puppeteer = require('../utils/puppeteer');
+        const tempPdfPath = path.join(pathBase, `temp_${Date.now()}_${certificateId}.pdf`);
+        const pdfResult = await puppeteer.generateCertificatePDF(data, tempPdfPath);
+        if (!pdfResult.success) {
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to generate PDF',
+            error: pdfResult.error
+          });
+        }
+        // Stream PDF and cleanup temp file
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=certificate_${certificateId}.pdf`);
+        const stream = fs.createReadStream(tempPdfPath);
+        stream.pipe(res);
+        stream.on('close', () => {
+          fs.unlink(tempPdfPath, () => {});
+        });
+        stream.on('error', () => {
+          fs.unlink(tempPdfPath, () => {});
+        });
+        return;
+      }
+      // Default: serve pre-generated JPG (for both png and jpg request)
+      const jpgFilename = filename.replace(/\.[^/.]+$/, '.jpg');
+      const filePath = path.join(pathBase, jpgFilename);
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({
           success: false,
           message: 'Certificate file not found'
         });
       }
-      
-      // Set appropriate content type
-      const contentType = format === 'pdf' ? 'application/pdf' : 'image/jpeg';
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${targetFilename}"`);
-      
-      // Stream the file
+      // Always serve as image/jpeg, even if format=png
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Content-Disposition', `attachment; filename=${jpgFilename}`);
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
     } catch (error) {

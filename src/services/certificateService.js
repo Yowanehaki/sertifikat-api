@@ -27,7 +27,8 @@ class CertificateService {
           examinerName: data.examinerName,
           examinerPosition: data.examinerPosition,
           companyCode: data.companyCode,
-          signaturePath: imageResult.filename
+          // Simpan signaturePath hanya jika ada file tanda tangan
+          signaturePath: data.signaturePath ? data.signaturePath : null
         }
       }).catch(error => {
         if (error.code === 'P2002') {
@@ -69,10 +70,10 @@ class CertificateService {
     }
   }
 
-  async getCertificateById(id) {
+  async getCertificateById(serialNumber) {
     try {
       const certificate = await prisma.certificate.findUnique({
-        where: { id }
+        where: { serialNumber }
       });
       
       return certificate;
