@@ -76,7 +76,7 @@ class PuppeteerCertificateGenerator {
       top: 935px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 150px;
+      font-size: 140px;
       font-weight: 700;
       color: black;
       text-align: center;
@@ -85,10 +85,10 @@ class PuppeteerCertificateGenerator {
     
     .activity {
       position: absolute;
-      top: 1362px;
+      top: 1357px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 80px;
+      font-size: 75px;
       font-weight: 600;
       color: black;
       text-align: center;
@@ -104,7 +104,7 @@ class PuppeteerCertificateGenerator {
       top: 1460px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 50px;
+      font-size: 40px;
       font-weight: 400;
       color: black;
       text-align: center;
@@ -116,8 +116,8 @@ class PuppeteerCertificateGenerator {
       top: 1580px;
       left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 300px;
+      width: 550px;
+      height: 250px;
     }
     
     .examiner-name {
@@ -125,7 +125,7 @@ class PuppeteerCertificateGenerator {
       top: 1930px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 100px;
+      font-size: 85px;
       font-weight: 600;
       color: black;
       text-align: center;
@@ -147,9 +147,9 @@ class PuppeteerCertificateGenerator {
     
     .company-code {
       position: absolute;
-      top: 2111px;
-      left: 100px;
-      font-size: 45px;
+      top: 2126px;
+      left: 95px;
+      font-size: 40px;
       font-weight: 700;
       color: black;
       font-family: 'Montserrat', sans-serif;
@@ -157,8 +157,8 @@ class PuppeteerCertificateGenerator {
     
     .validation-text {
       position: absolute;
-      top: 2171px;
-      left: 100px;
+      top: 2186px;
+      left: 95px;
       font-size: 43px;
       font-weight: 400;
       color: black;
@@ -180,7 +180,7 @@ class PuppeteerCertificateGenerator {
     <div class="examiner-name">${this.escapeHtml(data.examinerName)}</div>
     <div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div>
     <div class="company-code">${this.escapeHtml(data.companyCode)}</div>
-    <div class="validation-text">This certificate can be validated (ID : ${this.escapeHtml(data.id)})</div>
+    <div class="validation-text">This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )</div>
   </div>
 </body>
 </html>`;
@@ -283,5 +283,5 @@ class PuppeteerCertificateGenerator {
       .replace(/'/g, '&#39;');
   }
 }
-
+  
 module.exports = new PuppeteerCertificateGenerator();
