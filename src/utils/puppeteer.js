@@ -238,9 +238,9 @@ class PuppeteerCertificateGenerator {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
       const page = await browser.newPage();
-      // Gunakan resolusi lebih kecil agar PDF lebih ringan
-      const width = 1754; // setara A4 150dpi
-      const height = 1240;
+      // Ukuran dan style identik dengan PNG
+      const width = 3508;
+      const height = 2480;
       await page.setViewport({ width, height, deviceScaleFactor: 1 });
       const formattedDate = new Date(data.dateIssued).toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
@@ -248,15 +248,36 @@ class PuppeteerCertificateGenerator {
       const templatePath = path.join(__dirname, '../../assets/certificate-template.png');
       if (!fs.existsSync(templatePath)) throw new Error('Certificate template not found');
       const templateBase64 = fs.readFileSync(templatePath, { encoding: 'base64' });
-      // Pastikan signaturePath absolut dan file-nya ada
       let signatureImg = '';
       if (data.signaturePath && fs.existsSync(data.signaturePath)) {
         signatureImg = `<img class="signature" src="data:image/png;base64,${fs.readFileSync(data.signaturePath, { encoding: 'base64' })}" alt="Signature">`;
       }
-      const html = `
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><style>@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Montserrat',sans-serif;width:${width}px;height:${height}px;position:relative;background-image:url('data:image/png;base64,${templateBase64}');background-size:cover;background-position:center;background-repeat:no-repeat;}.certificate-content{position:absolute;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;}.participant-name{position:absolute;top:470px;left:50%;transform:translateX(-50%);font-size:75px;font-weight:700;color:black;text-align:center;font-family:'Montserrat',sans-serif;}.activity{position:absolute;top:690px;left:50%;transform:translateX(-50%);font-size:40px;font-weight:600;color:black;text-align:center;font-family:'Montserrat',sans-serif;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;}.date{position:absolute;top:740px;left:50%;transform:translateX(-50%);font-size:25px;font-weight:400;color:black;text-align:center;font-family:'Montserrat',sans-serif;}.signature{position:absolute;top:800px;left:50%;transform:translateX(-50%);width:300px;height:150px;}.examiner-name{position:absolute;top:970px;left:50%;transform:translateX(-50%);font-size:50px;font-weight:600;color:black;text-align:center;font-family:'Montserrat',sans-serif;}.examiner-position{position:absolute;top:1023px;left:50%;transform:translateX(-50%);font-size:40px;font-weight:400;color:black;text-align:center;text-decoration:underline;font-family:'Montserrat',sans-serif;}.company-code{position:absolute;top:1055px;left:50px;font-size:23px;font-weight:700;color:black;font-family:'Montserrat',sans-serif;}.validation-text{position:absolute;top:1085px;left:50px;font-size:21px;font-weight:400;color:black;font-family:'Montserrat',sans-serif;}</style></head><body><div class="certificate-content"><div class="participant-name">${this.escapeHtml(data.participantName)}</div><div class="activity">${this.escapeHtml(data.activity)}</div><div class="date">${formattedDate}</div>${signatureImg}<div class="examiner-name">${this.escapeHtml(data.examinerName)}</div><div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div><div class="company-code">${this.escapeHtml(data.companyCode)}</div><div class="validation-text">This certificate can be validated (ID : ${this.escapeHtml(data.id)})</div></div></body></html>`;
+      // Semua style identik PNG
+      const html = this.getCertificateHTML(data, templateBase64, formattedDate, signatureImg, {
+        width: 3508,
+        height: 2480,
+        participantNameTop: 935,
+        participantNameFontSize: 140,
+        activityTop: 1357,
+        activityFontSize: 75,
+        dateTop: 1460,
+        dateFontSize: 43,
+        signatureTop: 1580,
+        signatureWidth: 550,
+        signatureHeight: 250,
+        examinerNameTop: 1930,
+        examinerNameFontSize: 85,
+        examinerPositionTop: 2046,
+        examinerPositionFontSize: 80,
+        companyCodeTop: 2126,
+        companyCodeFontSize: 40,
+        validationTextTop: 2186,
+        validationTextFontSize: 43,
+        leftPadding: 95,
+        validationText: `This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )`,
+      });
       await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.evaluateHandle('document.fonts.ready');
       await new Promise(res => setTimeout(res, 1000));
       await page.pdf({
         path: pdfPath,
@@ -271,6 +292,162 @@ class PuppeteerCertificateGenerator {
     } finally {
       if (browser) await browser.close();
     }
+  }
+
+  getCertificateHTML(data, templateBase64, formattedDate, signatureImg, options = {}) {
+    const {
+      width = 3508,
+      height = 2480,
+      participantNameTop = 935,
+      participantNameFontSize = 140,
+      activityTop = 1357,
+      activityFontSize = 75,
+      dateTop = 1460,
+      dateFontSize = 43,
+      signatureTop = 1580,
+      signatureWidth = 550,
+      signatureHeight = 250,
+      examinerNameTop = 1930,
+      examinerNameFontSize = 85,
+      examinerPositionTop = 2046,
+      examinerPositionFontSize = 80,
+      companyCodeTop = 2126,
+      companyCodeFontSize = 40,
+      validationTextTop = 2186,
+      validationTextFontSize = 43,
+      leftPadding = 95,
+      validationText = `This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )`,
+    } = options;
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      width: ${width}px;
+      height: ${height}px;
+      position: relative;
+      background-image: url('data:image/png;base64,${templateBase64}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .certificate-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .participant-name {
+      position: absolute;
+      top: ${participantNameTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: ${participantNameFontSize}px;
+      font-weight: 700;
+      color: black;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .activity {
+      position: absolute;
+      top: ${activityTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: ${activityFontSize}px;
+      font-weight: 600;
+      color: black;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .date {
+      position: absolute;
+      top: ${dateTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: ${dateFontSize}px;
+      font-weight: 400;
+      color: black;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .signature {
+      position: absolute;
+      top: ${signatureTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: ${signatureWidth}px;
+      height: ${signatureHeight}px;
+    }
+    .examiner-name {
+      position: absolute;
+      top: ${examinerNameTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: ${examinerNameFontSize}px;
+      font-weight: 600;
+      color: black;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .examiner-position {
+      position: absolute;
+      top: ${examinerPositionTop}px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: ${examinerPositionFontSize}px;
+      font-weight: 400;
+      color: black;
+      text-align: center;
+      text-decoration: underline;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .company-code {
+      position: absolute;
+      top: ${companyCodeTop}px;
+      left: ${leftPadding}px;
+      font-size: ${companyCodeFontSize}px;
+      font-weight: 700;
+      color: black;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .validation-text {
+      position: absolute;
+      top: ${validationTextTop}px;
+      left: ${leftPadding}px;
+      font-size: ${validationTextFontSize}px;
+      font-weight: 400;
+      color: black;
+      font-family: 'Montserrat', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate-content">
+    <div class="participant-name">${this.escapeHtml(data.participantName)}</div>
+    <div class="activity">${this.escapeHtml(data.activity)}</div>
+    <div class="date">${formattedDate}</div>
+    ${signatureImg}
+    <div class="examiner-name">${this.escapeHtml(data.examinerName)}</div>
+    <div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div>
+    <div class="company-code">${this.escapeHtml(data.companyCode)}</div>
+    <div class="validation-text">${validationText}</div>
+  </div>
+</body>
+</html>`;
   }
 
   escapeHtml(text) {
