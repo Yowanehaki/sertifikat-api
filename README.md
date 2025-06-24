@@ -37,5 +37,3 @@ Backend untuk aplikasi generator sertifikat digital.
 ## Konfigurasi
 - Edit file `.env` untuk konfigurasi database dan variabel lain.
 
-## Lisensi
-MIT
