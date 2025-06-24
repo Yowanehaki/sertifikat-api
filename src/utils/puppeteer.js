@@ -138,7 +138,7 @@ class PuppeteerCertificateGenerator {
       left: 50%;
       transform: translateX(-50%);
       font-size: 79px;
-      font-weight: 410;
+      font-weight: 400;
       color: black;
       text-align: center;
       text-decoration: underline;
@@ -160,7 +160,7 @@ class PuppeteerCertificateGenerator {
       top: 2191px;
       left: 95px;
       font-size: 41px;
-      font-weight: 403;
+      font-weight: 400;
       color: black;
       font-family: 'Montserrat', sans-serif;
     }
@@ -184,7 +184,7 @@ class PuppeteerCertificateGenerator {
     <div class="examiner-name">${this.escapeHtml(data.examinerName)}</div>
     <div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div>
     <div class="company-code">${this.escapeHtml(data.companyCode)}</div>
-    <div class="validation-text">This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )</div>
+    <div class="validation-text">This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.id)}</span> )</div>
   </div>
 </body>
 </html>`;
@@ -272,13 +272,13 @@ class PuppeteerCertificateGenerator {
         examinerNameTop: 1931,
         examinerNameFontSize: 87,
         examinerPositionTop: 2044,
-        examinerPositionFontSize: 80,
+        examinerPositionFontSize: 79,
         companyCodeTop: 2133,
         companyCodeFontSize: 42,
         validationTextTop: 2191,
         validationTextFontSize: 41,
         leftPadding: 95,
-        validationText: `This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )`,
+        validationText: `This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.id)}</span> )`,
       });
       await page.setContent(html, { waitUntil: 'networkidle0' });
       await page.evaluateHandle('document.fonts.ready');
@@ -314,7 +314,7 @@ class PuppeteerCertificateGenerator {
       examinerNameTop = 1931,
       examinerNameFontSize = 87,
       examinerPositionTop = 2044,
-      examinerPositionFontSize = 80,
+      examinerPositionFontSize = 79,
       companyCodeTop = 2133,
       companyCodeFontSize = 42,
       validationTextTop = 2191,
@@ -413,7 +413,7 @@ class PuppeteerCertificateGenerator {
       left: 50%;
       transform: translateX(-50%);
       font-size: ${examinerPositionFontSize}px;
-      font-weight: 410;
+      font-weight: 400;
       color: black;
       text-align: center;
       text-decoration: underline;
@@ -433,7 +433,7 @@ class PuppeteerCertificateGenerator {
       top: ${validationTextTop}px;
       left: ${leftPadding}px;
       font-size: ${validationTextFontSize}px;
-      font-weight: 403;
+      font-weight: 400;
       color: black;
       font-family: 'Montserrat', sans-serif;
     }
