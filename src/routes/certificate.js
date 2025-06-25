@@ -16,6 +16,9 @@ router.get('/:id', certificateController.getCertificateById);
 // Download certificate
 router.get('/download/:filename', certificateController.downloadCertificate);
 
+// Download zip of certificates (PNG/PDF)
+router.post('/download-zip', certificateController.downloadZip);
+
 // Delete certificate
 router.delete('/:id', certificateController.deleteCertificate);
 

@@ -128,20 +128,44 @@ class ExcelController {
   static async generateCertificate(req, res) {
     try {
       const { id } = req.params;
-      
       // Get certificate data
-      const certificate = await ExcelService.getCertificates({ id });
-      
-      if (!certificate || certificate.length === 0) {
+      let certificateArr = await ExcelService.getCertificates({ id });
+      if (!certificateArr || certificateArr.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Sertifikat tidak ditemukan'
         });
       }
-
-      // Generate certificate using existing service
-      const result = await CertificateService.generateCertificate(req, res, certificate[0]);
-
+      let certificate = certificateArr[0];
+      // Update data jika ada input baru
+      const updateData = {};
+      if (req.body.dateIssued) updateData.dateIssued = req.body.dateIssued;
+      if (req.body.examinerName) updateData.examinerName = req.body.examinerName;
+      if (req.body.examinerPosition) updateData.examinerPosition = req.body.examinerPosition;
+      if (req.file) updateData.signaturePath = req.file.path;
+      if (Object.keys(updateData).length > 0) {
+        certificate = await ExcelService.updateCertificate(id, updateData);
+      }
+      // Generate certificate (PDF/PNG)
+      const certificateService = require('../services/certificateService');
+      const result = await certificateService.createCertificate({
+        ...certificate,
+        ...updateData,
+        serialNumber: certificate.serialNumber,
+        signaturePath: updateData.signaturePath || certificate.signaturePath
+      });
+      if (!result.success) {
+        return res.status(500).json({ success: false, message: result.error });
+      }
+      // Assume result.data.previewUrl is PNG/JPG, and PDF url is /api/certificates/download/:filename?format=pdf
+      const filename = result.data.filename || result.data.certificate?.filename;
+      const pdfUrl = `/api/certificates/download/${filename}?format=pdf`;
+      const pngUrl = result.data.previewUrl;
+      res.json({
+        success: true,
+        message: 'Sertifikat berhasil digenerate',
+        data: { pdfUrl, pngUrl }
+      });
     } catch (error) {
       console.error('Generate certificate error:', error);
       res.status(500).json({
@@ -183,16 +207,22 @@ class ExcelController {
       }
 
       // Generate certificates
+      const certificateService = require('../services/certificateService');
       const generatedFiles = [];
       for (const certificate of certificates) {
         try {
-          const result = await CertificateService.generateCertificate(req, res, certificate);
-          if (result && result.filePath) {
+          const result = await certificateService.createCertificate({
+            ...certificate,
+            serialNumber: certificate.serialNumber,
+            signaturePath: certificate.signaturePath
+          });
+          if (result && result.success && result.data && result.data.filename) {
             generatedFiles.push({
               id: certificate.id,
               participantName: certificate.participantName,
-              fileName: path.basename(result.filePath),
-              filePath: result.filePath
+              fileName: result.data.filename,
+              pdfUrl: `/api/certificates/download/${result.data.filename}?format=pdf`,
+              pngUrl: result.data.previewUrl
             });
           }
         } catch (error) {
@@ -211,6 +241,86 @@ class ExcelController {
 
     } catch (error) {
       console.error('Generate multiple certificates error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Terjadi kesalahan saat generate sertifikat massal'
+      });
+    }
+  }
+
+  /**
+   * Generate multiple certificates with additional data (dateIssued, examinerName, examinerPosition, signature)
+   */
+  static async generateMultipleCertificatesWithData(req, res) {
+    try {
+      const { ids, dateIssued, examinerName, examinerPosition } = req.body;
+      // signature: req.file
+      if (!ids || !Array.isArray(JSON.parse(ids)) || JSON.parse(ids).length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID sertifikat harus disediakan'
+        });
+      }
+      const idArray = JSON.parse(ids);
+      // Get certificates by IDs
+      let certificates = await ExcelService.getCertificates();
+      certificates = certificates.filter(cert => idArray.includes(cert.id));
+      if (certificates.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Tidak ada sertifikat yang ditemukan'
+        });
+      }
+      // Update data dan generate
+      const certificateService = require('../services/certificateService');
+      const generatedFiles = [];
+      for (const certificate of certificates) {
+        // Update data
+        const updateData = {
+          dateIssued: dateIssued || certificate.dateIssued,
+          examinerName: examinerName || certificate.examinerName,
+          examinerPosition: examinerPosition || certificate.examinerPosition,
+        };
+        if (req.file) updateData.signaturePath = req.file.path;
+        const updatedCert = await ExcelService.updateCertificate(certificate.id, updateData);
+        // Generate PNG
+        const result = await certificateService.createCertificate({
+          ...updatedCert,
+          serialNumber: updatedCert.serialNumber,
+          signaturePath: updateData.signaturePath || updatedCert.signaturePath
+        });
+        // Generate & save PDF
+        if (result && result.success && result.data && result.data.filename) {
+          const puppeteer = require('../utils/puppeteer');
+          const pathBase = path.join(__dirname, '../../generated-certificates');
+          const timestamp = Date.now();
+          const pdfFilename = `certificate_${timestamp}_${updatedCert.serialNumber}.pdf`;
+          const pdfPath = path.join(pathBase, pdfFilename);
+          await puppeteer.generateCertificatePDF({
+            ...updatedCert,
+            serialNumber: updatedCert.serialNumber,
+            signaturePath: updateData.signaturePath || updatedCert.signaturePath
+          }, pdfPath);
+          generatedFiles.push({
+            id: updatedCert.id,
+            participantName: updatedCert.participantName,
+            fileName: result.data.filename,
+            pdfFileName: pdfFilename,
+            pdfUrl: `/certificates/${pdfFilename}`,
+            pngUrl: result.data.previewUrl
+          });
+        }
+      }
+      res.json({
+        success: true,
+        message: `Berhasil generate ${generatedFiles.length} sertifikat` ,
+        data: {
+          totalGenerated: generatedFiles.length,
+          files: generatedFiles
+        }
+      });
+    } catch (error) {
+      console.error('Generate multiple certificates with data error:', error);
       res.status(500).json({
         success: false,
         message: error.message || 'Terjadi kesalahan saat generate sertifikat massal'

@@ -29,6 +29,7 @@ class ExcelService {
       
       // Expected headers mapping
       const expectedHeaders = {
+        'ID Sertifikat': 'serialNumber',
         'Nama Peserta': 'participantName',
         'Nama': 'participantName',
         'Activity': 'activity',
@@ -125,7 +126,7 @@ class ExcelService {
             examinerName: participant.examinerName,
             examinerPosition: participant.examinerPosition,
             companyCode: participant.companyCode,
-            serialNumber: this.generateSerialNumber()
+            serialNumber: participant.serialNumber || this.generateSerialNumber()
           }
         });
         
@@ -210,18 +211,21 @@ class ExcelService {
    */
   static async updateCertificate(id, data) {
     try {
+      // Build updateData only with fields present in data
+      const updateData = {};
+      if (data.participantName !== undefined) updateData.participantName = data.participantName;
+      if (data.activity !== undefined) updateData.activity = data.activity;
+      if (data.companyCode !== undefined) updateData.companyCode = data.companyCode;
+      if (data.serialNumber !== undefined) updateData.serialNumber = data.serialNumber;
+      // Only update dateIssued, examinerName, examinerPosition if present
+      if (data.dateIssued !== undefined) updateData.dateIssued = new Date(data.dateIssued);
+      if (data.examinerName !== undefined) updateData.examinerName = data.examinerName;
+      if (data.examinerPosition !== undefined) updateData.examinerPosition = data.examinerPosition;
+
       const certificate = await prisma.certificate.update({
         where: { id },
-        data: {
-          participantName: data.participantName,
-          activity: data.activity,
-          dateIssued: new Date(data.dateIssued),
-          examinerName: data.examinerName,
-          examinerPosition: data.examinerPosition,
-          companyCode: data.companyCode
-        }
+        data: updateData
       });
-      
       return certificate;
     } catch (error) {
       throw new Error(`Error updating certificate: ${error.message}`);

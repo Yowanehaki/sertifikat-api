@@ -184,7 +184,7 @@ class PuppeteerCertificateGenerator {
     <div class="examiner-name">${this.escapeHtml(data.examinerName)}</div>
     <div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div>
     <div class="company-code">${this.escapeHtml(data.companyCode)}</div>
-    <div class="validation-text">This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.id)}</span> )</div>
+    <div class="validation-text">This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.serialNumber)}</span> )</div>
   </div>
 </body>
 </html>`;
@@ -201,14 +201,13 @@ class PuppeteerCertificateGenerator {
       }
 
       const timestamp = Date.now();
-      const filename = `certificate_${timestamp}_${data.id}.jpg`;
+      const filename = `certificate_${timestamp}_${data.serialNumber}.png`;
       const outputPath = path.join(outputDir, filename);
 
       // Take screenshot
       await page.screenshot({
         path: outputPath,
-        type: 'jpeg',
-        quality: 100,
+        type: 'png',
         fullPage: true
       });
 
@@ -278,7 +277,7 @@ class PuppeteerCertificateGenerator {
         validationTextTop: 2191,
         validationTextFontSize: 41,
         leftPadding: 95,
-        validationText: `This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.id)}</span> )`,
+        validationText: `This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.serialNumber)}</span> )`,
       });
       await page.setContent(html, { waitUntil: 'networkidle0' });
       await page.evaluateHandle('document.fonts.ready');
@@ -320,7 +319,7 @@ class PuppeteerCertificateGenerator {
       validationTextTop = 2191,
       validationTextFontSize = 41,
       leftPadding = 95,
-      validationText = `This certificate can be validated ( ID : ${this.escapeHtml(data.id)} )`,
+      validationText = `This certificate can be validated ( ID : ${this.escapeHtml(data.serialNumber)} )`,
     } = options;
     return `
 <!DOCTYPE html>
@@ -451,7 +450,7 @@ class PuppeteerCertificateGenerator {
     <div class="examiner-name">${this.escapeHtml(data.examinerName)}</div>
     <div class="examiner-position">${this.escapeHtml(data.examinerPosition)}</div>
     <div class="company-code">${this.escapeHtml(data.companyCode)}</div>
-    <div class="validation-text">This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.id)}</span> )</div>
+    <div class="validation-text">This certificate can be validated ( ID : <span class="validation-id">${this.escapeHtml(data.serialNumber)}</span> )</div>
   </div>
 </body>
 </html>`;

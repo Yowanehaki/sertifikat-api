@@ -13,10 +13,13 @@ router.get('/certificates', ExcelController.getCertificates);
 router.get('/activities', ExcelController.getActivities);
 
 // Generate single certificate
-router.post('/generate/:id', ExcelController.generateCertificate);
+router.post('/generate/:id', upload.single('signature'), ExcelController.generateCertificate);
 
 // Generate multiple certificates
 router.post('/generate-multiple', ExcelController.generateMultipleCertificates);
+
+// Generate multiple certificates with additional data
+router.post('/generate-multiple-with-data', upload.single('signature'), ExcelController.generateMultipleCertificatesWithData);
 
 // Update certificate
 router.put('/certificates/:id', ExcelController.updateCertificate);
