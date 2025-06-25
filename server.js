@@ -49,6 +49,7 @@ async function testDbConnection() {
 
 // Import routes
 const certificateRoutes = require('./src/routes/certificate');
+const excelRoutes = require('./src/routes/excel');
 
 // Serve static files before API routes
 app.use('/certificates', express.static(path.join(__dirname, 'generated-certificates')));
@@ -56,6 +57,7 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // API routes
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/excel', excelRoutes);
 
 // Debug middleware
 app.use((req, res, next) => {
