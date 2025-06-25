@@ -6,20 +6,16 @@ function createExcelTemplate() {
   // Sample data for template
   const templateData = [
     {
+      'ID Sertifikat': 'CERT-20240001',
       'Nama Peserta': 'John Doe',
       'Activity': 'Pelatihan React JS',
-      'Examiner Name': 'Dr. Jane Smith',
-      'Examiner Position': 'Senior Developer',
-      'Company Code': 'COMP001',
-      'Date Issued': '2024-01-15'
+      'Company Code': 'COMP001'
     },
     {
+      'ID Sertifikat': 'CERT-20240002',
       'Nama Peserta': 'Jane Smith',
       'Activity': 'Pelatihan Node.js',
-      'Examiner Name': 'Dr. John Doe',
-      'Examiner Position': 'Tech Lead',
-      'Company Code': 'COMP002',
-      'Date Issued': '2024-01-16'
+      'Company Code': 'COMP002'
     }
   ];
 
@@ -29,12 +25,10 @@ function createExcelTemplate() {
 
   // Set column widths
   const columnWidths = [
+    { wch: 18 }, // ID Sertifikat
     { wch: 20 }, // Nama Peserta
     { wch: 25 }, // Activity
-    { wch: 20 }, // Examiner Name
-    { wch: 20 }, // Examiner Position
-    { wch: 15 }, // Company Code
-    { wch: 15 }  // Date Issued
+    { wch: 15 }  // Company Code
   ];
   worksheet['!cols'] = columnWidths;
 
