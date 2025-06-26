@@ -6,16 +6,16 @@ function createExcelTemplate() {
   // Sample data for template
   const templateData = [
     {
-      'ID Sertifikat': 'CERT-20240001',
+      'ID Sertifikat': '11v1josh',
       'Nama Peserta': 'John Doe',
       'Activity': 'Pelatihan React JS',
-      'Company Code': 'COMP001'
+      'Company Code': 'GRH/TO/2022/1022'
     },
     {
-      'ID Sertifikat': 'CERT-20240002',
+      'ID Sertifikat': '11v2grha',
       'Nama Peserta': 'Jane Smith',
       'Activity': 'Pelatihan Node.js',
-      'Company Code': 'COMP002'
+      'Company Code': 'GRH/TO/2025/0215'
     }
   ];
 
